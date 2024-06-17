@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DALL-E-mini Image Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #343a40;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #495057;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 40px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #imageContainer {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #imageContainer img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>DALL-E-mini Image Generator</h1>
+        </header>
+        <main>
+            <form onsubmit="event.preventDefault(); generateImage();">
+                <label for="textInput">Enter your image description:</label>
+                <textarea id="textInput" placeholder="Describe what you want to see in the image..."></textarea>
+                <button onclick="generateImage()">Generate Image</button>
+            </form>
+            <div id="imageContainer"></div>
+        </main>
+    </div>
+
+    <script>
+        async function generateImage() {
+            const textInput = document.getElementById('textInput').value.trim();
+
+            if (!textInput) {
+                alert('Please enter a description.');
+                return;
+            }
+
+            const response = await fetch('/generate-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description: textInput }),
+            });
+
+            if (!response.ok) {
+                alert('Failed to generate image. Please try again later.');
+                return;
+            }
+
+            const imageData = await response.json();
+            const imageUrl = imageData.url;
+
+            const imageContainer = document.getElementById('imageContainer');
+            imageContainer.innerHTML = `<img src="${imageUrl}" alt="Generated Image">`;
+        }
+    </script>
+</body>
+
+</html>
